@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.cun.clinicasabana" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Clínica de la Sabana</name>
+    <description>
+        Aplicación móvil híbrida para la gestión de historias clínicas, triage y evoluciones de urgencias.
+    </description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Diego Armando Cumplido Díaz
+    </author>
+    <content src="index.html" />
+    <icon src="www/img/logo.png" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="ScrollEnabled" value="true" />
+    <preference name="AndroidXEnabled" value="true" />
+    <preference name="SplashScreen" value="screen" />
+    <preference name="SplashScreenDelay" value="3000" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+</widget>

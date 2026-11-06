@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <title>Clínica de la Sabana - Sistema Médico</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- BANNER DE ESTADO DE RED (OFFLINE / ONLINE) -->
+    <div id="offlineBanner"></div>
+
+    <!-- MODULO 1: LOGIN -->
+    <div id="loginSection" class="login-card">
+        <h2 style="color: #1e3a8a; margin-bottom: 5px;">CLÍNICA DE LA SABANA</h2>
+        <p style="color: #64748b; font-size: 13px; margin-bottom: 25px;">Acceso al Sistema Médico</p>
+        
+        <form id="loginForm">
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label>Usuario:</label>
+                <input type="text" id="userInput" placeholder="Ej: admin o consulta" required>
+            </div>
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label>Contraseña:</label>
+                <input type="password" id="passInput" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-guardar" style="width: 100%;">Iniciar Sesión</button>
+        </form>
+
+        <div style="display: none;">
+            <strong>Credenciales Demo:</strong><br>
+            • Admin (Edición): <code>admin</code> / <code>1234</code><br>
+            • Consulta (Lectura): <code>consulta</code> / <code>1234</code>
+        </div>
+
+        <div style="display: none;">
+            <span>🌐 Backend API:</span><br>
+            <code id="backendUrlDisplay" style="font-size: 10px; color: #0284c7; word-break: break-all;"></code><br>
+            <a href="javascript:void(0)" onclick="window.configurarBackendUrl()" style="color: #0284c7; text-decoration: underline; margin-top: 4px; display: inline-block; font-weight: bold;">⚙️ Cambiar URL de Railway / Backend</a>
+        </div>
+    </div>
+
+    <!-- MODULO 2: PANEL PRINCIPAL -->
+    <div id="mainSection" class="app-container" style="display: none;">
+        
+        <div class="header">
+            <div class="header-title">
+                <h1>Clínica de la Sabana</h1>
+                <p>Sistema de Gestión de Historias Clínicas</p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <span id="backendBadge" style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold; cursor: pointer;" title="Clic para configurar URL de Backend" onclick="window.configurarBackendUrl()">🌐 Backend</span>
+                <span id="userBadge" class="user-badge">Rol: Admin</span>
+                <button class="btn-logout" onclick="window.authController.cerrarSesion()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- FORMULARIO CRUD -->
+        <div id="formSection" class="card">
+            <h3 id="formTitulo">Registrar Nuevo Paciente</h3>
+            <form id="pacienteForm">
+                <input type="hidden" id="pacienteIndex">
+
+                <div class="grid-form">
+                    <div class="full-width">
+                        <label>Nombres y Apellidos:</label>
+                        <input type="text" id="nombre" placeholder="Ej: Ana Restrepo" required>
+                    </div>
+
+                    <div>
+                        <label>Tipo de Documento:</label>
+                        <select id="tipoDoc" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <option value="CC">Cédula de Ciudadanía (CC)</option>
+                            <option value="TI">Tarjeta de Identidad (TI)</option>
+                            <option value="RC">Registro Civil / NUIP</option>
+                            <option value="CE">Cédula de Extranjería (CE)</option>
+                            <option value="PAS">Pasaporte</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Número de Documento:</label>
+                        <input type="text" id="documento" placeholder="Ej: 1020304050" required>
+                    </div>
+
+                    <div>
+                        <label>Fecha de Nacimiento (AAAA-MM-DD):</label>
+                        <input type="text" id="fechaNacimiento" placeholder="Ej: 1986-05-14" maxlength="10" required>
+                        <small id="fechaNacimientoError" class="error-text" style="display:none;"></small>
+                    </div>
+
+                    <div>
+                        <label>Teléfono de Contacto:</label>
+                        <input type="tel" id="telefono" placeholder="Ej: 3001234567" required>
+                    </div>
+
+                    <div>
+                        <label>EPS:</label>
+                        <select id="eps" required>
+                            <option value="" disabled selected>Seleccione EPS...</option>
+                            <option value="Sura">Sura</option>
+                            <option value="Sanitas">Sanitas</option>
+                            <option value="Nueva EPS">Nueva EPS</option>
+                            <option value="Compensar">Compensar</option>
+                            <option value="Salud Total">Salud Total</option>
+                            <option value="Mutual Ser">Mutual Ser</option>
+                            <option value="Coosalud">Coosalud</option>
+                            <option value="Familiar Colombia">Familiar Colombia</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Régimen de Salud:</label>
+                        <select id="regimen" required>
+                            <option value="" disabled selected>Seleccione...</option>
+                            <option value="Contributivo">Contributivo</option>
+                            <option value="Subsidiado">Subsidiado</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Nivel de Triage (Urgencia):</label>
+                        <select id="triage" required>
+                            <option value="" disabled selected>Seleccione Triage...</option>
+                            <option value="Triage I (Rojo)">Triage I - Reanimación (Rojo)</option>
+                            <option value="Triage II (Naranja)">Triage II - Emergencia (Naranja)</option>
+                            <option value="Triage III (Amarillo)">Triage III - Urgencia (Amarillo)</option>
+                            <option value="Triage IV (Verde)">Triage IV - Menor (Verde)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Estado del Paciente:</label>
+                        <select id="estado" required>
+                            <option value="Activo">Activo</option>
+                            <option value="En tratamiento">En tratamiento</option>
+                            <option value="Dado de alta">Dado de alta</option>
+                        </select>
+                    </div>
+
+                    <!-- SIGNOS VITALES DE INGRESO (TRIAGE) -->
+                    <div class="full-width" style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 5px;">
+                        <label style="font-weight: bold; color: #1e3a8a; margin-bottom: 8px; display: block;">📊 Signos Vitales de Ingreso (Triage - Opcional):</label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+                            <div>
+                                <small>Presión (PA):</small>
+                                <input type="text" id="regPA" placeholder="120/80">
+                                <small id="regPAError" class="error-text" style="display:none;"></small>
+                            </div>
+                            <div>
+                                <small>Frec. Cardíaca (FC):</small>
+                                <input type="text" id="regFC" placeholder="80 lpm">
+                                <small id="regFCError" class="error-text" style="display:none;"></small>
+                            </div>
+                            <div>
+                                <small>Temperatura (T°):</small>
+                                <input type="text" id="regTemp" placeholder="36.5 °C">
+                                <small id="regTempError" class="error-text" style="display:none;"></small>
+                            </div>
+                            <div>
+                                <small>Saturación (SpO2):</small>
+                                <input type="text" id="regSpO2" placeholder="98%">
+                                <small id="regSpO2Error" class="error-text" style="display:none;"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="full-width">
+                        <label>Diagnóstico Inicial / Valoración de Urgencias (Ingreso):</label>
+                        <textarea id="diagnostico" placeholder="Escriba aquí los antecedentes, síntomas y diagnóstico de ingreso..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-guardar" id="btnGuardar">Guardar Paciente</button>
+                    <button type="button" class="btn-cancelar" id="btnCancelar" style="display:none;" onclick="window.appController.limpiarFormulario()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- TABLA DE REGISTROS -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                <h3 style="margin:0; border:none; padding:0;">Listado de Pacientes Registrados</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-print no-print" onclick="window.appController.imprimirListaGeneral()">🖨️ Imprimir Lista General (PDF)</button>
+                    <button class="btn-print no-print" style="background-color: #16a34a;" onclick="window.appController.exportarAExcel()">📊 Exportar a Excel (CSV)</button>
+                </div>
+            </div>
+
+            <div class="no-print" style="margin-bottom: 15px;">
+                <input type="text" id="buscarInput" placeholder="🔍 Buscar por nombre, documento o EPS...">
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Nombre</th>
+                            <th>Edad</th>
+                            <th>Contacto</th>
+                            <th>EPS / Régimen</th>
+                            <th>Triage</th>
+                            <th>Estado</th>
+                            <th>Diagnóstico Inicial</th>
+                            <th class="no-print">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaPacientes"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODULO 3: VISTA DE FICHA Y REPORTES DE IMPRESIÓN -->
+    <div id="reporteContainer" class="app-container" style="display: none;">
+        <div class="card" id="reporteCard">
+            <div id="reporteContenido"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE EVOLUCIONES CON CAMPOS DE SIGNOS VITALES -->
+    <div id="modalEvoluciones" class="modal">
+        <div class="modal-content" style="max-width: 750px;">
+            <span class="close-btn" onclick="window.appController.cerrarModalEvoluciones()">&times;</span>
+            
+            <h3 id="modalPacienteNombre" style="color: #1e3a8a; margin-top: 0; margin-bottom: 10px; padding-right: 25px;">Evoluciones Médicas</h3>
+
+            <div style="margin-bottom: 15px;">
+                <button id="btnImprimirHistorialEvoluciones" type="button" class="btn-print" style="background-color: #0284c7; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; display: block;" onclick="(window.pacienteController || window.appController).imprimirHistorialEvoluciones()">
+                    🖨️ Imprimir Historial Completo de Evoluciones
+                </button>
+            </div>
+            
+            <div id="diagnosticoIngresoBox" style="background: #e0f2fe; border-left: 4px solid #0284c7; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 13px;">
+                <strong>🩺 Valoración / Diagnóstico de Ingreso (Urgencias):</strong>
+                <div id="txtDiagIngreso" style="margin-top: 5px; color: #0369a1; font-weight: bold;"></div>
+            </div>
+
+            <div id="formEvolucionContainer" style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: #334155;">+ Registrar Nueva Evolución y Signos Vitales</h4>
+                <form id="evoForm">
+                    <input type="hidden" id="evoPacienteIndex">
+                    <div class="grid-form">
+                        <div>
+                            <label>Especialidad / Área:</label>
+                            <select id="evoEspecialidad" required>
+                                <option value="Medicina General">Medicina General</option>
+                                <option value="Enfermería">Enfermería</option>
+                                <option value="Especialista / Internista">Especialista / Internista</option>
+                                <option value="Trabajo Social">Trabajo Social</option>
+                                <option value="Psicología">Psicología</option>
+                                <option value="Nutrición">Nutrición</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Nombre del Profesional:</label>
+                            <input type="text" id="evoProfesional" placeholder="Ej: Dr. Carlos Pérez" required>
+                        </div>
+
+                        <!-- SIGNOS VITALES -->
+                        <div class="full-width" style="background: #ffffff; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; margin-top: 5px;">
+                            <label style="font-weight: bold; color: #1e3a8a; margin-bottom: 8px; display: block;">📊 Signos Vitales Actuales (Opcional):</label>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+                                <div>
+                                    <small>Presión (PA):</small>
+                                    <input type="text" id="evoPA" placeholder="120/80">
+                                    <small id="evoPAError" class="error-text" style="display:none;"></small>
+                                </div>
+                                <div>
+                                    <small>Frec. Cardíaca (FC):</small>
+                                    <input type="text" id="evoFC" placeholder="80 bpm">
+                                    <small id="evoFCError" class="error-text" style="display:none;"></small>
+                                </div>
+                                <div>
+                                    <small>Temperatura (T°):</small>
+                                    <input type="text" id="evoTemp" placeholder="36.5 °C">
+                                    <small id="evoTempError" class="error-text" style="display:none;"></small>
+                                </div>
+                                <div>
+                                    <small>Saturación (SpO2):</small>
+                                    <input type="text" id="evoSpO2" placeholder="98%">
+                                    <small id="evoSpO2Error" class="error-text" style="display:none;"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="full-width">
+                            <label>Nota de Evolución Diaria:</label>
+                            <textarea id="evoNota" placeholder="Describa la evolución del paciente..." required></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-guardar" style="margin-top: 10px; width: 100%;">Guardar Evolución</button>
+                </form>
+            </div>
+
+            <div id="historialEvoluciones" style="max-height: 300px; overflow-y: auto; padding-right: 5px;"></div>
+        </div>
+    </div>
+
+    <!-- CARGA DE SCRIPTS MODULARES -->
+    <script src="cordova.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/models/Paciente.js"></script>
+    <script src="js/repositories/PacienteRepository.js"></script>
+    <script src="js/controllers/PacienteController.js"></script>
+    <script src="js/controllers/AuthController.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

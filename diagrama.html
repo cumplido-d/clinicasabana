@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Diagrama de Casos de Uso</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #ffffff; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+    .btn-download { background: #1e3a8a; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 20px; }
+    #diagrama-card { background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 20px; width: 800px; }
+    .header { text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 8px; margin-bottom: 16px; }
+    .header h2 { font-size: 16px; color: #1e3a8a; }
+    .header p { font-size: 11px; color: #475569; }
+    .body { display: grid; grid-template-columns: 170px 1fr 170px; gap: 12px; align-items: center; }
+    .actor { padding: 14px 10px; border-radius: 8px; text-align: center; font-size: 12px; }
+    .actor.consulta { background: #eff6ff; border: 1.5px solid #93c5fd; }
+    .actor.admin { background: #f0fdf4; border: 1.5px solid #86efac; }
+    .actor h4 { font-size: 13px; margin: 6px 0; color: #0f172a; }
+    .boundary { background: #f8fafc; border: 1.5px dashed #94a3b8; border-radius: 8px; padding: 12px; }
+    .boundary-title { font-size: 11px; font-weight: bold; color: #334155; text-align: center; margin-bottom: 10px; text-transform: uppercase; background: #e2e8f0; padding: 3px; border-radius: 4px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .pill { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 14px; padding: 6px 10px; font-size: 11px; color: #1e293b; display: flex; align-items: center; justify-content: space-between; }
+    .pill.shared { border-left: 4px solid #3b82f6; }
+    .pill.adm { border-left: 4px solid #10b981; }
+    .tag { font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 6px; }
+    .tag.both { background: #dbeafe; color: #1d4ed8; }
+    .tag.admin { background: #dcfce7; color: #15803d; }
+  </style>
+</head>
+<body>
+  <button class="btn-download" onclick="descargar()">?? Guardar Imagen PNG</button>
+  <div id="diagrama-card">
+    <div class="header">
+      <h2>DIAGRAMA DE CASOS DE USO POR ROL</h2>
+      <p>Clínica de la Sabana — Aplicación Móvil Híbrida</p>
+    </div>
+    <div class="body">
+      <div class="actor consulta">
+        <div style="font-size: 26px;">?????</div>
+        <h4>Rol Consulta</h4>
+        <p>Auditoría / Práctica</p>
+        <span style="font-size: 9px; font-weight: bold; background: #bfdbfe; color: #1e40af; padding: 2px 6px; border-radius: 8px; display: inline-block; margin-top: 6px;">Lectura (GET)</span>
+      </div>
+      <div class="boundary">
+        <div class="boundary-title">Límite del Sistema (Móvil / API)</div>
+        <div class="grid">
+          <div class="pill shared"><span>?? Iniciar Sesión</span><span class="tag both">Ambos</span></div>
+          <div class="pill adm"><span>? Registrar Paciente</span><span class="tag admin">Admin</span></div>
+          <div class="pill shared"><span>?? Consultar Lista</span><span class="tag both">Ambos</span></div>
+          <div class="pill adm"><span>?? Editar Paciente</span><span class="tag admin">Admin</span></div>
+          <div class="pill shared"><span>?? Filtrar Paciente</span><span class="tag both">Ambos</span></div>
+          <div class="pill adm"><span>??? Eliminar Paciente</span><span class="tag admin">Admin</span></div>
+          <div class="pill shared"><span>?? Ver Historial Evol.</span><span class="tag both">Ambos</span></div>
+          <div class="pill adm"><span>?? Guardar Evolución</span><span class="tag admin">Admin</span></div>
+          <div class="pill shared"><span>??? Imprimir Ficha</span><span class="tag both">Ambos</span></div>
+          <div class="pill shared"><span>?? Exportar PDF</span><span class="tag both">Ambos</span></div>
+        </div>
+      </div>
+      <div class="actor admin">
+        <div style="font-size: 26px;">?????</div>
+        <h4>Rol Admin</h4>
+        <p>Médico / Jefe Enfermería</p>
+        <span style="font-size: 9px; font-weight: bold; background: #bbf7d0; color: #166534; padding: 2px 6px; border-radius: 8px; display: inline-block; margin-top: 6px;">Control Total</span>
+      </div>
+    </div>
+  </div>
+  <script>
+    function descargar() {
+      html2canvas(document.getElementById('diagrama-card'), { scale: 2 }).then(canvas => {
+        const a = document.createElement('a');
+        a.download = 'Figura7_Diagrama_Casos_de_Uso.png';
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+      });
+    }
+  </script>
+</body>
+</html>
