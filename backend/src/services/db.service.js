@@ -2,17 +2,30 @@ const mysql = require('mysql2/promise');
 const crypto = require('crypto');
 require('dotenv').config();
 
-// Pool de conexiones a Railway
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'shinkansen.proxy.rlwy.net',
-  port: Number(process.env.DB_PORT) || 21985,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME || 'clinica_sabana',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+// Pool de conexiones a Railway optimizado
+const poolConfig = process.env.MYSQL_URL || process.env.DATABASE_URL
+  ? {
+      uri: process.env.MYSQL_URL || process.env.DATABASE_URL,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 10000
+    }
+  : {
+      host: process.env.DB_HOST || 'mysql.railway.internal',
+      port: Number(process.env.DB_PORT) || 3306,
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME || 'railway',
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 10000
+    };
+
+const pool = mysql.createPool(poolConfig);
 
 class DatabaseService {
   async init() {
